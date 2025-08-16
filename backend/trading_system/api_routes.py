@@ -2,7 +2,7 @@
 Enhanced API Routes for FinGPT Trading System with ML/RL Integration
 FastAPI endpoints for trading engine operations with full AI capabilities
 """
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Query
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime

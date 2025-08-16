@@ -1,6 +1,6 @@
 """
-FastAPI routes for FinGPT Trading System
-RESTful API endpoints for trading engine interaction
+Enhanced API Routes for FinGPT Trading System with ML/RL Integration
+FastAPI endpoints for trading engine operations with full AI capabilities
 """
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from pydantic import BaseModel, Field

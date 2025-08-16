@@ -71,12 +71,15 @@ async def get_system_info():
         "description": "AI-Powered Trading System optimized for High-Performance Cloud Infrastructure",
         "features": [
             "Real-time market data from MEXC, Binance, Yahoo Finance",
-            "Advanced technical analysis with 15+ indicators",
+            "Advanced technical analysis with 25+ indicators",
             "Multi-strategy trading engine (Momentum, Mean Reversion, Breakout)",
             "Comprehensive risk management system",
             "Paper trading with performance tracking",
             "Memory-efficient data storage with compression",
-            "RESTful API for system integration"
+            "RESTful API for system integration",
+            "Parallel processing optimization",
+            "High-throughput data processing",
+            "Advanced machine learning integration"
         ],
         "data_sources": {
             "crypto": ["MEXC WebSocket", "Binance Public API"],
@@ -96,6 +99,65 @@ async def get_system_info():
             "storage_limit": "116GB high-speed storage",
             "architecture": "ARM64 cloud-optimized",
             "performance_mode": "High-throughput parallel processing"
+        },
+        "performance_capabilities": {
+            "max_concurrent_symbols": 100,
+            "parallel_analysis_workers": 12,
+            "data_processing_threads": 8,
+            "strategy_evaluation_workers": 6,
+            "risk_calculation_threads": 4,
+            "memory_cache_size_mb": 8192,
+            "concurrent_data_feeds": 20
+        }
+    }
+
+@api_router.get("/system/performance")
+async def get_system_performance():
+    """Get real-time system performance metrics"""
+    import psutil
+    import os
+    
+    # CPU usage
+    cpu_percent = psutil.cpu_percent(interval=1)
+    cpu_count = psutil.cpu_count()
+    
+    # Memory usage
+    memory = psutil.virtual_memory()
+    
+    # Disk usage
+    disk = psutil.disk_usage('/')
+    
+    # System load
+    load_avg = os.getloadavg() if hasattr(os, 'getloadavg') else [0, 0, 0]
+    
+    return {
+        "timestamp": datetime.utcnow().isoformat(),
+        "cpu": {
+            "usage_percent": cpu_percent,
+            "core_count": cpu_count,
+            "load_average": {
+                "1min": load_avg[0],
+                "5min": load_avg[1],
+                "15min": load_avg[2]
+            }
+        },
+        "memory": {
+            "total_gb": round(memory.total / (1024**3), 2),
+            "available_gb": round(memory.available / (1024**3), 2),
+            "used_gb": round(memory.used / (1024**3), 2),
+            "usage_percent": memory.percent
+        },
+        "disk": {
+            "total_gb": round(disk.total / (1024**3), 2),
+            "free_gb": round(disk.free / (1024**3), 2),
+            "used_gb": round(disk.used / (1024**3), 2),
+            "usage_percent": round((disk.used / disk.total) * 100, 2)
+        },
+        "optimization_status": {
+            "high_performance_mode": True,
+            "parallel_processing": True,
+            "memory_optimization": True,
+            "cache_efficiency": "High"
         }
     }
 

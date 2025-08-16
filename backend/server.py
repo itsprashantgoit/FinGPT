@@ -200,6 +200,12 @@ async def startup_event():
         # Set the trading engine for API routes
         set_trading_engine(trading_engine_instance)
         
+        # Start enhanced trading engine with full ML/RL capabilities
+        await trading_engine_instance.start_enhanced_engine(
+            symbols=['BTCUSDT', 'ETHUSDT', 'BNBUSDT'], 
+            enable_ml=True
+        )
+        
         logger.info("FinGPT Trading System initialized successfully!")
         
     except Exception as e:

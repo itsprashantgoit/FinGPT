@@ -68,7 +68,7 @@ async def get_system_info():
     return {
         "system": "FinGPT Trading System",
         "version": "1.0.0",
-        "description": "AI-Powered Trading System optimized for RTX 4050 (6GB VRAM)",
+        "description": "AI-Powered Trading System optimized for High-Performance Cloud Infrastructure",
         "features": [
             "Real-time market data from MEXC, Binance, Yahoo Finance",
             "Advanced technical analysis with 15+ indicators",

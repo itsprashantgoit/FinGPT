@@ -39,7 +39,6 @@ class OrderStatus(str, Enum):
 @dataclass
 class KlineData:
     """Standard kline/candlestick data structure"""
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     symbol: str
     timestamp: int  # Unix timestamp in milliseconds
     open_price: float
@@ -49,6 +48,7 @@ class KlineData:
     volume: float
     interval: str  # 1m, 5m, 15m, 1h, 4h, 1d
     exchange: ExchangeType
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     created_at: datetime = Field(default_factory=datetime.utcnow)
     
     def to_dict(self) -> Dict:
@@ -58,25 +58,25 @@ class KlineData:
 @dataclass
 class OrderBookData:
     """Order book depth data structure"""
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     symbol: str
     timestamp: int
     bids: List[List[float]]  # [[price, quantity], ...]
     asks: List[List[float]]  # [[price, quantity], ...]
     exchange: ExchangeType
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 @dataclass
 class TradeData:
     """Individual trade/transaction data"""
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     symbol: str
     timestamp: int
     price: float
     quantity: float
     side: OrderSide
     exchange: ExchangeType
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 

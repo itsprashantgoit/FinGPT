@@ -205,19 +205,367 @@ async def list_portfolios(engine: TradingEngine = Depends(get_trading_engine)):
 
 
 # Trading Signals and Analysis Endpoints
-@router.get("/signals", response_model=List[SignalResponse])
-async def get_recent_signals(
-    limit: int = 20,
-    engine: TradingEngine = Depends(get_trading_engine)
-):
+@router.get("/signals/recent")
+async def get_recent_signals(limit: int = 20, trading_engine: TradingEngine = Depends(get_trading_engine)):
     """Get recent trading signals"""
     try:
-        signals = engine.get_recent_signals(limit)
-        return [SignalResponse(**signal) for signal in signals]
-        
+        signals = trading_engine.get_recent_signals(limit)
+        return {
+            "signals": signals,
+            "count": len(signals),
+            "timestamp": datetime.utcnow().isoformat()
+        }
     except Exception as e:
-        logger.error(f"Failed to get signals: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error getting recent signals: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve recent signals")
+
+
+# ============================================================================
+# ML/RL ENHANCED ENDPOINTS - FULL POTENTIAL IMPLEMENTATION
+# ============================================================================
+
+@router.get("/ml/status")
+async def get_ml_status(trading_engine: TradingEngine = Depends(get_trading_engine)):
+    """Get comprehensive ML/RL system status"""
+    try:
+        status = trading_engine.get_ml_engine_status()
+        return {
+            "ml_status": status,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error getting ML status: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve ML status")
+
+
+@router.get("/ml/predictions")
+async def get_ml_predictions(
+    symbol: Optional[str] = Query(None, description="Specific symbol to get predictions for"),
+    trading_engine: TradingEngine = Depends(get_trading_engine)
+):
+    """Get current ML predictions for symbols"""
+    try:
+        predictions = trading_engine.get_ml_predictions(symbol)
+        return {
+            "predictions": predictions,
+            "symbol": symbol,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error getting ML predictions: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve ML predictions")
+
+
+@router.get("/ml/sentiment")
+async def get_sentiment_analysis(trading_engine: TradingEngine = Depends(get_trading_engine)):
+    """Get current market sentiment analysis"""
+    try:
+        sentiment = trading_engine.get_sentiment_analysis()
+        return {
+            "sentiment_analysis": sentiment,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error getting sentiment analysis: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve sentiment analysis")
+
+
+class MLTrainingRequest(BaseModel):
+    model_type: str = Field(default="all", description="Type of model to train: 'all', 'lstm', 'transformer', 'ensemble', 'rl'")
+    symbols: Optional[List[str]] = Field(default=None, description="Symbols to train on (default: all subscribed)")
+    
+@router.post("/ml/train")
+async def train_ml_models(
+    request: MLTrainingRequest,
+    background_tasks: BackgroundTasks,
+    trading_engine: TradingEngine = Depends(get_trading_engine)
+):
+    """Train ML models with current market data"""
+    try:
+        # Run training in background
+        background_tasks.add_task(
+            trading_engine.train_ml_models,
+            request.model_type,
+            request.symbols
+        )
+        
+        return {
+            "message": f"ML training started for {request.model_type}",
+            "model_type": request.model_type,
+            "symbols": request.symbols or "all subscribed",
+            "status": "training_initiated",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error starting ML training: {e}")
+        raise HTTPException(status_code=500, detail="Failed to start ML training")
+
+
+class OptimizationRequest(BaseModel):
+    optimization_type: str = Field(default="all", description="Type of optimization: 'all', 'lstm', 'ensemble', 'rl'")
+    
+@router.post("/ml/optimize")
+async def optimize_hyperparameters(
+    request: OptimizationRequest,
+    background_tasks: BackgroundTasks,
+    trading_engine: TradingEngine = Depends(get_trading_engine)
+):
+    """Run hyperparameter optimization"""
+    try:
+        # Run optimization in background
+        background_tasks.add_task(
+            trading_engine.optimize_hyperparameters,
+            request.optimization_type
+        )
+        
+        return {
+            "message": f"Hyperparameter optimization started for {request.optimization_type}",
+            "optimization_type": request.optimization_type,
+            "status": "optimization_initiated",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error starting optimization: {e}")
+        raise HTTPException(status_code=500, detail="Failed to start hyperparameter optimization")
+
+
+class BacktestRequest(BaseModel):
+    symbols: List[str] = Field(description="Symbols to backtest")
+    days: int = Field(default=30, description="Number of days to backtest", ge=1, le=365)
+    
+@router.post("/ml/backtest")
+async def run_ml_backtest(
+    request: BacktestRequest,
+    background_tasks: BackgroundTasks,
+    trading_engine: TradingEngine = Depends(get_trading_engine)
+):
+    """Run ML-enhanced backtest"""
+    try:
+        # Run backtest in background
+        background_tasks.add_task(
+            trading_engine.run_ml_backtest,
+            request.symbols,
+            request.days
+        )
+        
+        return {
+            "message": f"ML backtest started for {len(request.symbols)} symbols over {request.days} days",
+            "symbols": request.symbols,
+            "days": request.days,
+            "status": "backtest_initiated",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error starting ML backtest: {e}")
+        raise HTTPException(status_code=500, detail="Failed to start ML backtest")
+
+
+@router.get("/rl/agents/status")
+async def get_rl_agents_status(trading_engine: TradingEngine = Depends(get_trading_engine)):
+    """Get status of all RL agents"""
+    try:
+        if hasattr(trading_engine, 'rl_agents'):
+            agents_status = {}
+            for name, agent in trading_engine.rl_agents.items():
+                if hasattr(agent, 'get_agent_status'):
+                    agents_status[name] = agent.get_agent_status()
+                elif hasattr(agent, 'get_system_status'):
+                    agents_status[name] = agent.get_system_status()
+                else:
+                    agents_status[name] = {"type": type(agent).__name__, "available": True}
+            
+            return {
+                "rl_agents": agents_status,
+                "total_agents": len(trading_engine.rl_agents),
+                "timestamp": datetime.utcnow().isoformat()
+            }
+        else:
+            return {"error": "RL agents not available"}
+    except Exception as e:
+        logger.error(f"Error getting RL agents status: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve RL agents status")
+
+
+class RLTrainingRequest(BaseModel):
+    agent_type: str = Field(default="all", description="Type of RL agent to train: 'all', 'primary', 'multi_agent'")
+    timesteps: int = Field(default=50000, description="Number of training timesteps", ge=1000, le=1000000)
+    
+@router.post("/rl/train")
+async def train_rl_agents(
+    request: RLTrainingRequest,
+    background_tasks: BackgroundTasks,
+    trading_engine: TradingEngine = Depends(get_trading_engine)
+):
+    """Train RL agents"""
+    try:
+        if hasattr(trading_engine, 'rl_agents'):
+            if request.agent_type == "all":
+                # Train all agents
+                for name, agent in trading_engine.rl_agents.items():
+                    if hasattr(agent, 'train'):
+                        background_tasks.add_task(agent.train, total_timesteps=request.timesteps)
+                    elif hasattr(agent, 'train_all_agents'):
+                        background_tasks.add_task(agent.train_all_agents, total_timesteps=request.timesteps)
+            elif request.agent_type in trading_engine.rl_agents:
+                agent = trading_engine.rl_agents[request.agent_type]
+                if hasattr(agent, 'train'):
+                    background_tasks.add_task(agent.train, total_timesteps=request.timesteps)
+                elif hasattr(agent, 'train_all_agents'):
+                    background_tasks.add_task(agent.train_all_agents, total_timesteps=request.timesteps)
+            else:
+                raise HTTPException(status_code=404, detail=f"RL agent '{request.agent_type}' not found")
+            
+            return {
+                "message": f"RL training started for {request.agent_type}",
+                "agent_type": request.agent_type,
+                "timesteps": request.timesteps,
+                "status": "training_initiated",
+                "timestamp": datetime.utcnow().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=404, detail="RL agents not available")
+    except Exception as e:
+        logger.error(f"Error starting RL training: {e}")
+        raise HTTPException(status_code=500, detail="Failed to start RL training")
+
+
+@router.get("/ai/performance")
+async def get_ai_performance_metrics(trading_engine: TradingEngine = Depends(get_trading_engine)):
+    """Get AI/ML performance metrics and analytics"""
+    try:
+        performance_data = {}
+        
+        # ML performance metrics
+        if hasattr(trading_engine, 'ml_performance_history'):
+            recent_performance = list(trading_engine.ml_performance_history)[-10:]  # Last 10 entries
+            performance_data['ml_performance_history'] = recent_performance
+        
+        # Prediction accuracy
+        if hasattr(trading_engine, 'prediction_accuracy'):
+            performance_data['prediction_accuracy'] = dict(trading_engine.prediction_accuracy)
+        
+        # Sentiment analysis performance
+        if hasattr(trading_engine, 'sentiment_data'):
+            sentiment_data = trading_engine.sentiment_data
+            if hasattr(sentiment_data, '__dict__'):
+                performance_data['sentiment_performance'] = {
+                    'confidence_level': getattr(sentiment_data, 'confidence_level', 0.0),
+                    'sample_size': getattr(sentiment_data, 'sample_size', 0),
+                    'source_breakdown': getattr(sentiment_data, 'source_breakdown', {})
+                }
+        
+        # RL agent performance
+        if hasattr(trading_engine, 'rl_agents'):
+            rl_performance = {}
+            for name, agent in trading_engine.rl_agents.items():
+                if hasattr(agent, 'performance_metrics'):
+                    rl_performance[name] = agent.performance_metrics
+            performance_data['rl_performance'] = rl_performance
+        
+        return {
+            "ai_performance": performance_data,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error getting AI performance metrics: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve AI performance metrics")
+
+
+@router.get("/ai/insights")
+async def get_ai_insights(
+    symbol: Optional[str] = Query(None, description="Symbol to get insights for"),
+    trading_engine: TradingEngine = Depends(get_trading_engine)
+):
+    """Get AI-powered market insights and recommendations"""
+    try:
+        insights = {
+            "market_analysis": {},
+            "trading_recommendations": {},
+            "risk_assessment": {},
+            "predictions": {}
+        }
+        
+        # Get ML predictions
+        if symbol:
+            predictions = trading_engine.get_ml_predictions(symbol)
+            insights["predictions"] = predictions
+        else:
+            insights["predictions"] = trading_engine.get_ml_predictions()
+        
+        # Get sentiment analysis
+        sentiment = trading_engine.get_sentiment_analysis()
+        insights["market_analysis"]["sentiment"] = sentiment
+        
+        # Get recent signals for analysis
+        recent_signals = trading_engine.get_recent_signals(10)
+        
+        # Analyze signal patterns
+        if recent_signals:
+            signal_analysis = {
+                "total_signals": len(recent_signals),
+                "bullish_signals": len([s for s in recent_signals if s.get('action') == 'BUY']),
+                "bearish_signals": len([s for s in recent_signals if s.get('action') == 'SELL']),
+                "avg_confidence": sum(s.get('confidence', 0) for s in recent_signals) / len(recent_signals),
+                "ml_enhanced_signals": len([s for s in recent_signals if 'ML' in s.get('strategy_used', '')])
+            }
+            insights["trading_recommendations"]["signal_analysis"] = signal_analysis
+        
+        # Risk assessment based on current positions and market conditions
+        engine_status = trading_engine.get_engine_status()
+        insights["risk_assessment"] = {
+            "total_positions": engine_status.get("total_positions", 0),
+            "active_portfolios": engine_status.get("active_portfolios", 0),
+            "signals_generated": engine_status.get("signals_generated", 0)
+        }
+        
+        return {
+            "ai_insights": insights,
+            "symbol": symbol,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error getting AI insights: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve AI insights")
+
+
+@router.post("/ai/emergency-stop")
+async def ai_emergency_stop(trading_engine: TradingEngine = Depends(get_trading_engine)):
+    """Emergency stop for all AI/ML systems"""
+    try:
+        # Stop ML prediction loops and RL training
+        if hasattr(trading_engine, 'ml_enabled'):
+            trading_engine.ml_enabled = False
+        
+        # Clear ML predictions
+        if hasattr(trading_engine, 'ml_predictions'):
+            trading_engine.ml_predictions.clear()
+        
+        return {
+            "message": "AI/ML systems emergency stop initiated",
+            "status": "stopped",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error in AI emergency stop: {e}")
+        raise HTTPException(status_code=500, detail="Failed to execute AI emergency stop")
+
+
+@router.post("/ai/resume")
+async def resume_ai_systems(trading_engine: TradingEngine = Depends(get_trading_engine)):
+    """Resume AI/ML systems after emergency stop"""
+    try:
+        # Re-enable ML systems
+        if hasattr(trading_engine, 'ml_enabled'):
+            trading_engine.ml_enabled = True
+        
+        return {
+            "message": "AI/ML systems resumed",
+            "status": "active",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error resuming AI systems: {e}")
+        raise HTTPException(status_code=500, detail="Failed to resume AI systems")
 
 
 @router.get("/analysis/{symbol}")

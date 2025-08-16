@@ -8,7 +8,7 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 import logging
 
-from .trading_engine import TradingEngine
+from .ml_enhanced_engine import MLEnhancedTradingEngine as TradingEngine
 from .data_models import TradingSignal, Portfolio
 
 logger = logging.getLogger(__name__)

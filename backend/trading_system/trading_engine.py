@@ -315,7 +315,7 @@ class TradingEngine:
                 
                 # Close positions that need to be closed
                 for i, position, reason in reversed(positions_to_close):
-                    await self._close_position(portfolio_id, i, position, reason)
+                    asyncio.create_task(self._close_position(portfolio_id, i, position, reason))
             
         except Exception as e:
             logger.error(f"Error updating positions for {symbol}: {e}")

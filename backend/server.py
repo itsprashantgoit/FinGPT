@@ -91,9 +91,11 @@ async def get_system_info():
             "daily_limits": "2% daily loss limit"
         },
         "hardware_optimized": {
-            "target_gpu": "RTX 4050 (6GB VRAM)",
-            "storage_limit": "526GB with compression",
-            "memory_efficient": "Quantized models, compressed storage"
+            "target_cpu": "16-core ARM Neoverse-N1",
+            "memory": "62GB RAM available",
+            "storage_limit": "116GB high-speed storage",
+            "architecture": "ARM64 cloud-optimized",
+            "performance_mode": "High-throughput parallel processing"
         }
     }
 

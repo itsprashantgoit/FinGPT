@@ -27,7 +27,7 @@ import torch
 from flair.data import Sentence
 from flair.models import TextClassifier
 import yfinance as yf
-from alpha_vantage.alpha_vantage import AlphaVantage
+from alpha_vantage.fundamentaldata import FundamentalData
 from newsapi import NewsApiClient
 
 logger = logging.getLogger(__name__)
@@ -120,7 +120,7 @@ class MarketSentimentAnalyzer:
         # Alpha Vantage API
         if alpha_vantage_key:
             try:
-                self.alpha_vantage_client = AlphaVantage(key=alpha_vantage_key, output_format='pandas')
+                self.alpha_vantage_client = FundamentalData(key=alpha_vantage_key, output_format='pandas')
                 logger.info("Alpha Vantage API client initialized")
             except Exception as e:
                 logger.warning(f"Alpha Vantage initialization failed: {e}")

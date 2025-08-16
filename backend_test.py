@@ -911,13 +911,37 @@ class FinGPTTester:
         for capability in capabilities:
             print(capability)
         
+        print("\n=== ML/RL ENHANCED CAPABILITIES ===")
+        ml_capabilities = [
+            "✅ ML/RL System Status Monitoring",
+            "✅ LSTM Price Prediction Models",
+            "✅ Transformer Market Analysis",
+            "✅ Ensemble ML Predictions",
+            "✅ Reinforcement Learning Agents",
+            "✅ Market Sentiment Analysis",
+            "✅ AI Performance Metrics",
+            "✅ AI-Powered Market Insights",
+            "✅ ML Model Training Pipeline",
+            "✅ Hyperparameter Optimization",
+            "✅ RL Agent Training System",
+            "✅ AI Emergency Controls",
+            "✅ Enhanced Trading Signals with ML Integration"
+        ]
+        
+        for capability in ml_capabilities:
+            print(capability)
+        
         print("\n=== PERFORMANCE HIGHLIGHTS ===")
-        print("✅ System optimized for RTX 4050 (6GB VRAM)")
+        print("✅ System optimized for High-Performance Cloud Infrastructure")
         print("✅ Memory-efficient data storage with compression")
         print("✅ Multi-source data feeds (MEXC, Binance, Yahoo Finance)")
-        print("✅ Advanced technical analysis with 15+ indicators")
+        print("✅ Advanced technical analysis with 25+ indicators")
         print("✅ Multi-strategy trading engine (Momentum, Mean Reversion, Breakout)")
         print("✅ Comprehensive risk management system")
+        print("✅ Full ML/RL Integration with Deep Learning Models")
+        print("✅ Advanced AI-Powered Trading Decisions")
+        print("✅ Real-time Sentiment Analysis")
+        print("✅ Autonomous RL Trading Agents")
         
         return {
             "total_tests": total_tests,

@@ -180,12 +180,12 @@ const TradingDashboard = () => {
               onClick={() => setAutoRefresh(!autoRefresh)}
               size="sm"
             >
-              <Refresh className="h-4 w-4 mr-2" />
+              <RefreshCw className="h-4 w-4 mr-2" />
               Auto Refresh
             </Button>
             
             <Button onClick={fetchAllData} variant="outline" size="sm">
-              <Refresh className="h-4 w-4" />
+              <RefreshCw className="h-4 w-4" />
             </Button>
           </div>
         </div>

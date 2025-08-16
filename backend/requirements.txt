@@ -23,6 +23,7 @@ numpy>=1.26.0
 python-multipart>=0.0.9
 jq>=1.6.0
 typer>=0.9.0
+psutil>=6.0.0
 
 # FinGPT Trading System Dependencies
 websocket-client>=1.7.0

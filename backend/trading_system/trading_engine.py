@@ -1,12 +1,15 @@
 """
 Main Trading Engine for FinGPT Trading System
 Coordinates all components: data feeds, analysis, strategies, risk management
+Optimized for High-Performance Cloud Infrastructure (16-core ARM, 62GB RAM)
 """
 import asyncio
 import logging
 from typing import Dict, List, Optional, Set
 from datetime import datetime, timedelta
 from collections import defaultdict, deque
+import concurrent.futures
+import threading
 
 from .data_sources import MultiSourceDataManager
 from .technical_analysis import TechnicalAnalysisEngine, IndicatorConfig
@@ -18,25 +21,50 @@ from .data_models import (
     PerformanceMetrics, OrderSide, OrderStatus, ExchangeType
 )
 
+# Import optimized configuration
+try:
+    from config.performance_config import PerformanceConfig, get_environment_config
+except ImportError:
+    # Fallback if config not available
+    class PerformanceConfig:
+        @classmethod
+        def get_worker_counts(cls):
+            return {"data_workers": 8, "strategy_workers": 4, "risk_workers": 2, "db_connections": 8}
+
 logger = logging.getLogger(__name__)
 
 
 class TradingEngine:
     """
     Main trading engine orchestrating all system components
-    Optimized for RTX 4050 hardware constraints
+    Optimized for High-Performance Cloud Infrastructure (16-core ARM Neoverse-N1, 62GB RAM)
     """
     
     def __init__(self, mongo_manager: MongoDBManager, storage_path: str = "./trading_data"):
-        # Initialize core components
+        # Initialize core components with optimized configuration
+        self.config = PerformanceConfig.get_worker_counts()
         self.mongo_manager = mongo_manager
         self.storage = MemoryEfficientDataStorage(storage_path)
         self.data_manager = MultiSourceDataManager()
         
-        # Analysis and strategy components
+        # Analysis and strategy components with parallel processing
         self.ta_engine = TechnicalAnalysisEngine(IndicatorConfig())
         self.strategy_manager = StrategyManager(self.ta_engine)
         self.risk_manager = RiskManager(RiskLimits())
+        
+        # Thread pools for parallel processing
+        self.data_executor = concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.config.get("data_workers", 8),
+            thread_name_prefix="DataWorker"
+        )
+        self.strategy_executor = concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.config.get("strategy_workers", 4),
+            thread_name_prefix="StrategyWorker"
+        )
+        self.risk_executor = concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.config.get("risk_workers", 2),
+            thread_name_prefix="RiskWorker"
+        )
         
         # Engine state
         self.is_running = False
@@ -45,9 +73,9 @@ class TradingEngine:
         self.active_positions: Dict[str, List[Position]] = {}
         self.pending_orders: Dict[str, List[Order]] = {}
         
-        # Performance tracking
+        # Performance tracking with enhanced capacity
         self.performance_metrics: Dict[str, PerformanceMetrics] = {}
-        self.signal_history: deque = deque(maxlen=1000)
+        self.signal_history: deque = deque(maxlen=10000)  # Increased capacity
         
         # Subscribed symbols and intervals
         self.subscribed_symbols: Set[str] = set()

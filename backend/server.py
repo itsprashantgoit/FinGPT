@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 
 # Import FinGPT Trading System
-from trading_system.trading_engine import TradingEngine
+from trading_system.ml_enhanced_engine import MLEnhancedTradingEngine
 from trading_system.storage import MongoDBManager
 from trading_system.api_routes import router as trading_router, set_trading_engine
 
@@ -195,7 +195,7 @@ async def startup_event():
         mongo_manager = MongoDBManager(client, os.environ['DB_NAME'])
         
         # Create trading engine
-        trading_engine_instance = TradingEngine(mongo_manager)
+        trading_engine_instance = MLEnhancedTradingEngine(mongo_manager)
         
         # Set the trading engine for API routes
         set_trading_engine(trading_engine_instance)

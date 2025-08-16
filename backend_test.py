@@ -953,8 +953,8 @@ class FinGPTTester:
         }
 
 async def run_comprehensive_tests():
-    """Run all comprehensive tests"""
-    print("Starting FinGPT Trading System Comprehensive Testing...")
+    """Run all comprehensive tests including ML/RL capabilities"""
+    print("Starting FinGPT Trading System Comprehensive Testing with Full ML/RL Capabilities...")
     print(f"Backend URL: {BACKEND_URL}")
     print(f"API Base: {API_BASE}")
     
@@ -981,6 +981,44 @@ async def run_comprehensive_tests():
             await tester.test_risk_management()
             await tester.test_data_management()
             await tester.test_health_check()
+            
+            # ===== NEW ML/RL COMPREHENSIVE TESTING =====
+            print("\n🤖 STARTING ML/RL ENHANCED CAPABILITIES TESTING...")
+            
+            # Test ML/RL System Status
+            await tester.test_ml_rl_system_status()
+            
+            # Test ML Predictions
+            await tester.test_ml_predictions()
+            
+            # Test Sentiment Analysis
+            await tester.test_sentiment_analysis()
+            
+            # Test RL Agents Status
+            await tester.test_rl_agents_status()
+            
+            # Test AI Performance Metrics
+            await tester.test_ai_performance()
+            
+            # Test AI Insights
+            await tester.test_ai_insights()
+            
+            # Test ML Training
+            await tester.test_ml_training()
+            
+            # Test Hyperparameter Optimization
+            await tester.test_hyperparameter_optimization()
+            
+            # Test RL Training
+            await tester.test_rl_training()
+            
+            # Test Enhanced Trading Signals Integration
+            await tester.test_enhanced_trading_signals()
+            
+            # Test AI Emergency Controls
+            await tester.test_ai_emergency_controls()
+            
+            print("\n🚀 ML/RL ENHANCED CAPABILITIES TESTING COMPLETED!")
             
             # Stop the engine
             await tester.test_trading_engine_stop()

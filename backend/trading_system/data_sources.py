@@ -17,8 +17,7 @@ from urllib3.util.retry import Retry
 
 import yfinance as yf
 import ccxt
-from binance.client import Client as BinanceClient
-from binance.websockets import BinanceSocketManager
+# from binance.client import Client as BinanceClient  # Not needed for public API
 
 from .data_models import KlineData, OrderBookData, TradeData, ExchangeType
 
